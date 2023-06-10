@@ -1,40 +1,38 @@
 from scrapy import signals
 
 
-class PepParseSpiderMiddleware:
-
+class PepParse:
     @classmethod
     def from_crawler(cls, crawler):
-        s = cls()
-        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
-        return s
+        class_self = cls()
 
-    def process_spider_input(self, response, spider):
-        return None
+        crawler.signals.connect(
+            class_self.spider_opened, signal=signals.spider_opened
+        )
 
-    def process_spider_output(self, response, result, spider):
-        for i in result:
-            yield i
-
-    def process_spider_exception(self, response, exception, spider):
-        pass
-
-    def process_start_requests(self, start_requests, spider):
-        for r in start_requests:
-            yield r
+        return class_self
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class PepParseDownloaderMiddleware:
+class PepParseSpiderMiddleware(PepParse):
+    def process_spider_input(self, response, spider):
+        return None
 
-    @classmethod
-    def from_crawler(cls, crawler):
-        s = cls()
-        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
-        return s
+    def process_spider_output(self, response, result, spider):
+        for item in result:
+            yield item
 
+    def process_spider_exception(self, response, exception, spider):
+        pass
+
+    def process_start_requests(self, start_requests, spider):
+        for request in start_requests:
+            yield request
+
+
+class PepParseDownloaderMiddleware(PepParse):
     def process_request(self, request, spider):
         return None
 
@@ -43,6 +41,3 @@ class PepParseDownloaderMiddleware:
 
     def process_exception(self, request, exception, spider):
         pass
-
-    def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)

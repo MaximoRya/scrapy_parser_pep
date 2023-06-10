@@ -12,6 +12,8 @@ FILE_NAME = 'status_summary_{}.csv'
 
 class PepParsePipeline:
     def __init__(self):
+        # Тестами жёстко отслеживается формирование из двух констант
+        # Если выношу в другую константу, то Pytest не пропускает...
         self.results_dir = BASE_DIR / RESULTS_DIR
         self.results_dir.mkdir(exist_ok=True)
 
